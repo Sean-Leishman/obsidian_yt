@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 	tea "github.com/charmbracelet/bubbletea"
-	youtube "github.com/seanleishman/obsidian_yt/youtube"
-	"github.com/spf13/cobra"
+	"github.com/sean-leishman/obsidian_yt/youtube"
+	// "github.com/spf13/cobra"
+	"github.com/joho/godotenv"
 
 	"os"
 )
@@ -103,8 +104,19 @@ func (m model) View() string {
 }
 
 func main() {
-	var youtubeClient = youtube.InitYoutubeClient()
-	var playlists = youtube.ListMyPlaylists(youtubeClient)
+	godotenv.Load()
+	youtubeClient, err := youtube.InitYoutubeClient()
+	if err != nil {
+		fmt.Println("Error initializing YouTube client:", err)
+		return
+	}
+
+	playlists, err := youtube.ListMyPlaylists(youtubeClient)
+	if err != nil {
+		fmt.Println("Error listing playlists:", err)
+		return
+	}
+
 	fmt.Println(playlists)
 	for _, pl := range playlists {
 		fmt.Println(pl.Snippet.Title)
